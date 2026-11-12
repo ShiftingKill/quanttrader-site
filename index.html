@@ -61,9 +61,9 @@
   <section>
     <h2>How it fits together</h2>
     <p class="sub">A handful of custom NinjaScripts talk to each other in memory while the market is open. Nothing leaves the machine; everything lands in plain CSV files for the analysis afterwards.</p>
-<div class="flow"><b>Signals</b>        1-minute signal engine ──┐
+<div class="flow"><b>Signals</b>        1-minute signal engine ────┐
 <b>Order flow</b>     tape pressure, VWAP, zones ├──►  <i>Auto Cannon</i>  (ATM entries, score gates, smart exit)
-<b>Environment</b>    Renko speed and chop ─────┘          │
+<b>Environment</b>    Renko speed and chop ──────┘          │
                                                     ▼
 <b>Shadow trader</b>  logs every signal many ways  ──►  CSV: events · bars · tick paths · session ticks
                                                     │
