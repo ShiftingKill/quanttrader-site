@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuantTrader</title>
+<meta name="description" content="An MNQ futures research and execution stack for NinjaTrader 8: a shadow trader that logs every signal many ways, a quant panel that replays it tick by tick, and walk-forward discipline.">
+<style>
+  :root { --bg:#0f1115; --panel:#181a1e; --line:#2a2d34; --text:#e8e8ea; --dim:#9aa0ab; --accent:#0a84ff; --hot:#ff2bff; --good:#3ddc84; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.55 "Segoe UI", system-ui, sans-serif; }
+  a { color:var(--accent); }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 20px; }
+  header { padding:64px 0 28px; }
+  h1 { font-size:44px; margin:0 0 10px; letter-spacing:-.5px; }
+  h1 span { color:var(--accent); }
+  .lead { font-size:19px; color:var(--dim); max-width:720px; margin:0; }
+  img { max-width:100%; height:auto; display:block; border:1px solid var(--line); border-radius:10px; }
+  .hero { margin:8px 0 18px; }
+  .cap { color:var(--dim); font-size:14px; margin:8px 2px 0; }
+  section { padding:0 0 56px; }
+  h2 { font-size:26px; margin:0 0 6px; }
+  .sub { color:var(--dim); margin:0 0 22px; max-width:820px; }
+  .row { display:grid; grid-template-columns:1.25fr 1fr; gap:32px; align-items:center; }
+  .row.flip { grid-template-columns:1fr 1.25fr; }
+  .row.flip .pic { order:2; }
+  ul { margin:0; padding-left:20px; }
+  li { margin:7px 0; }
+  li b { color:#fff; }
+  .bar { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px; overflow-x:auto; }
+  .bar img { border:0; border-radius:0; max-width:none; }
+  .steps { display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin:0 0 26px; }
+  .step { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  .step .n { font:600 13px Consolas, monospace; color:var(--accent); }
+  .step h3 { margin:6px 0 4px; font-size:17px; }
+  .step p { margin:0; color:var(--dim); font-size:14.5px; }
+  .flow { font:14px/1.6 Consolas, monospace; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:18px; overflow-x:auto; white-space:pre; color:#cfd3da; }
+  .flow b { color:var(--accent); font-weight:600; }
+  .flow i { color:var(--hot); font-style:normal; }
+  .note { border-left:3px solid var(--hot); padding:4px 0 4px 14px; color:var(--dim); margin:22px 0 0; }
+  footer { border-top:1px solid var(--line); padding:22px 0 40px; color:var(--dim); font-size:14px; }
+  @media (max-width:760px) {
+    h1 { font-size:34px; }
+    .row, .row.flip, .steps { grid-template-columns:1fr; }
+    .row.flip .pic { order:0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Quant<span>Trader</span></h1>
+    <p class="lead">An MNQ futures research and execution stack for NinjaTrader 8. Every signal is traded many ways in the shadows, every tick is logged, and no setting changes until it has proven itself on days it never saw.</p>
+  </header>
+
+  <div class="hero">
+    <img src="img/chart_1m.webp" alt="MNQ 1-minute chart with signal markers, VWAP bands, VWAP magnet shorts, order-flow volume profile and the VWAP/POC minefield drawn behind the candles" width="1900" height="1435">
+    <p class="cap">The 1-minute MNQ chart during a session: signals, VWAP bands and magnet shots, the order-flow profile on the right, and the VWAP / POC "minefield" shaded behind the candles.</p>
+  </div>
+
+  <section>
+    <h2>How it fits together</h2>
+    <p class="sub">A handful of custom NinjaScripts talk to each other in memory while the market is open. Nothing leaves the machine; everything lands in plain CSV files for the analysis afterwards.</p>
+<div class="flow"><b>Signals</b>        1-minute signal engine ──┐
+<b>Order flow</b>     tape pressure, VWAP, zones ├──►  <i>Auto Cannon</i>  (ATM entries, score gates, smart exit)
+<b>Environment</b>    Renko speed and chop ─────┘          │
+                                                       ▼
+<b>Shadow trader</b>  logs every signal many ways  ──►  CSV: events · bars · tick paths · session ticks
+                                                       │
+<b>Quant panel</b>    replays, ranks, recommends   ◄──────┘</div>
+  </section>
+
+  <section>
+    <div class="row">
+      <div class="pic"><img src="img/chart_renko.webp" alt="Renko chart with ConfluencePulse speed and chop readout and long/short markers" width="1372" height="633"></div>
+      <div>
+        <h2>The environment chart</h2>
+        <ul>
+          <li><b>Custom Renko bars</b> rebuilt from every trade print.</li>
+          <li><b>ConfluencePulse</b> reads speed and chop from the bricks and publishes them live.</li>
+          <li><b>Chop matters.</b> The same signal behaves very differently in a clean trend and in a grind; the strategy knows which one it is in.</li>
+          <li>The brick size and lookback are not guesses: the panel rebuilds the Renko chart from logged ticks at many sizes and picks the one that best separates winners from losers.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The shadow trader</h2>
+    <p class="sub">The idea that makes the rest possible. A live strategy only learns from the trades it takes. The shadow trader learns from every signal, whether we traded it or not.</p>
+    <div class="row flip">
+      <div class="pic"><img src="img/panel_leaderboard.webp" alt="Quant panel leaderboard: cumulative ticks for every shadow model" width="1600" height="850"></div>
+      <div>
+        <ul>
+          <li><b>Every signal, many trades.</b> Each signal opens a family of hypothetical trades: different entries, stops, targets and trailing exits, all at once.</li>
+          <li><b>No orders.</b> Nothing is sent to the broker. The trades exist only in the log.</li>
+          <li><b>Tick by tick.</b> Every print is recorded while any shadow trade is open, so each one can later be replayed exactly.</li>
+          <li><b>Context at the moment of entry:</b> VWAP position, tape pressure, Renko state and more, stored next to each trade.</li>
+          <li><b>Real trades too.</b> The live strategy's fills are logged alongside, so model and reality can be compared.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="cap">Each line is one shadow model's running total across the same signals. Names and numbers are hidden on purpose.</p>
+  </section>
+
+  <section>
+    <h2>The quant panel</h2>
+    <p class="sub">A desktop app that reads every log and asks one question over and over: what would have happened if we had traded differently?</p>
+    <div class="bar"><img src="img/panel_tabs.webp" alt="Quant panel tabs" width="1180" height="70"></div>
+    <p class="cap">Start Here, Data, Leaderboard, Exit Optimizer, Entry Engine, Signal Filters, ATM Gates, Gate Replay, Renko Study, Indicator Lab, Trades, Recommendations.</p>
+  </section>
+
+  <section>
+    <div class="row">
+      <div class="pic"><img src="img/panel_exit_optimizer.webp" alt="Exit optimizer: equity curve of the selected exit against the current live exits" width="1600" height="850"></div>
+      <div>
+        <h2>Replay, don't guess</h2>
+        <ul>
+          <li><b>Tick-exact replays.</b> Stops, targets and trailing exits are replayed on the logged tick paths, not on bar approximations.</li>
+          <li><b>Proven on every load.</b> A self-test re-runs the logged shadow trades and must match them exactly before anything is shown.</li>
+          <li><b>Equity curves, not totals.</b> A good exit rises smoothly and wins in both halves of the data. One lucky trade doesn't count.</li>
+          <li><b>The real engine, ported.</b> Entry rules and score gates are reproduced from the strategy, so "what if" means what the strategy would really have done.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="row flip">
+      <div class="pic"><img src="img/panel_renko_study.webp" alt="Renko study grid, values hidden" width="1600" height="850"></div>
+      <div>
+        <h2>Every indicator is a hypothesis</h2>
+        <ul>
+          <li><b>Indicator Lab</b> re-runs the signal engine on logged data with one setting changed at a time, and first proves it reproduces the live signals exactly.</li>
+          <li><b>Gate Replay</b> scores each signal at the moment it fired and shows which filters saved money and which only got in the way.</li>
+          <li><b>Renko Study</b> rebuilds the environment chart at many brick sizes from raw ticks.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Walking forward</h2>
+    <p class="sub">The easiest way to fool yourself in trading is to tune settings on the same days you then judge them on. The process below is the guard rail.</p>
+    <div class="steps">
+      <div class="step"><div class="n">01 · COLLECT</div><h3>Log, don't touch</h3><p>Run a block of sessions with settings frozen. The shadow trader records everything.</p></div>
+      <div class="step"><div class="n">02 · DECIDE</div><h3>Change one or two things</h3><p>Only changes with enough evidence, that win in both halves of the data, by a material margin.</p></div>
+      <div class="step"><div class="n">03 · PROVE</div><h3>Judge on unseen days</h3><p>Run the next block with the new settings and judge them only on days that played no part in choosing them.</p></div>
+      <div class="step"><div class="n">04 · REPEAT</div><h3>Keep or roll back</h3><p>If it still wins out of sample, it stays. If not, it goes. Then the next block begins.</p></div>
+    </div>
+    <img src="img/panel_start_here.webp" alt="Start Here tab: changes with enough evidence and a watch list, values hidden" width="1600" height="850">
+    <p class="cap">Start Here lists only the changes with enough evidence, and a watch list of promising ones that need more days. Confidence is capped by the number of days logged, however good a result looks.</p>
+  </section>
+
+  <section>
+    <div class="row">
+      <div class="pic"><img src="img/chart_5m.webp" alt="5-minute MNQ chart with signals and executions" width="1370" height="596"></div>
+      <div>
+        <h2>Safety first</h2>
+        <ul>
+          <li><b>One exit button.</b> A safe exit closes through the strategy, never through a race with the chart's own buttons.</li>
+          <li><b>Never naked.</b> If a protective stop is rejected or cancelled while a position is still open, the strategy flattens on its own.</li>
+          <li><b>No stray hot keys.</b> Nothing on the keyboard can open a trade.</li>
+          <li><b>Sim first.</b> Every change runs in simulation before it touches a live account.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What isn't here</h2>
+    <p class="sub">The source code, the thresholds, the gate logic and the exits we actually trade stay private. The screenshots are real; the numbers in them are hidden on purpose.</p>
+    <p class="note">Research software, not financial advice. Futures trading carries substantial risk of loss. Past results, real or simulated, do not predict future results.</p>
+  </section>
+
+  <footer>
+    Screenshots taken with <a href="https://shiftingkill.github.io/screencap-site/">ScreenCap</a>, our lightweight Windows capture tool. · QuantTrader · NinjaTrader 8 · MNQ
+  </footer>
+</div>
+</body>
+</html>
