@@ -89,7 +89,7 @@
     <h2>The shadow trader</h2>
     <p class="sub">The idea that makes the rest possible. A live strategy only learns from the trades it takes. The shadow trader learns from every signal, whether we traded it or not.</p>
     <div class="row flip">
-      <div class="pic"><img src="img/panel_leaderboard.webp" alt="Quant panel leaderboard: cumulative ticks for every shadow model" width="1600" height="850"></div>
+      <div class="pic"><img src="img/panel_leaderboard.webp" alt="Quant panel leaderboard: cumulative ticks for every shadow model" width="1600" height="940"></div>
       <div>
         <ul>
           <li><b>Every signal, many trades.</b> Each signal opens a family of hypothetical trades: different entries, stops, targets and trailing exits, all at once.</li>
@@ -106,13 +106,13 @@
   <section>
     <h2>The quant panel</h2>
     <p class="sub">A desktop app that reads every log and asks one question over and over: what would have happened if we had traded differently?</p>
-    <div class="bar"><img src="img/panel_tabs.webp" alt="Quant panel tabs" width="1180" height="70"></div>
-    <p class="cap">Start Here, Data, Leaderboard, Exit Optimizer, Entry Engine, Signal Filters, ATM Gates, Gate Replay, Renko Study, Indicator Lab, Trades, Recommendations.</p>
+    <div class="bar"><img src="img/panel_tabs.webp" alt="Quant panel tabs" width="1470" height="42"></div>
+    <p class="cap">Start Here, Walk-Forward, Setup Lab, Data, Leaderboard, Exit Optimizer, Entry Engine, Signal Filters, ATM Gates, Gate Replay, Renko Study, Orbs Backtest, Trades, Recommendations.</p>
   </section>
 
   <section>
     <div class="row">
-      <div class="pic"><img src="img/panel_exit_optimizer.webp" alt="Exit optimizer: equity curve of the selected exit against the current live exits" width="1600" height="850"></div>
+      <div class="pic"><img src="img/panel_exit_optimizer.webp" alt="Exit optimizer: equity curve of the selected exit against the current live exits" width="1600" height="940"></div>
       <div>
         <h2>Replay, don't guess</h2>
         <ul>
@@ -127,13 +127,42 @@
 
   <section>
     <div class="row flip">
-      <div class="pic"><img src="img/panel_renko_study.webp" alt="Renko study grid, values hidden" width="1600" height="850"></div>
+      <div class="pic"><img src="img/panel_renko_study.webp" alt="Renko study grid, values hidden" width="1600" height="940"></div>
       <div>
         <h2>Every indicator is a hypothesis</h2>
         <ul>
-          <li><b>Indicator Lab</b> re-runs the signal engine on logged data with one setting changed at a time, and first proves it reproduces the live signals exactly.</li>
+          <li><b>Orbs Backtest</b> re-runs the signal engine on logged data with one setting changed at a time, and first proves it reproduces the live signals exactly.</li>
           <li><b>Gate Replay</b> scores each signal at the moment it fired and shows which filters saved money and which only got in the way.</li>
           <li><b>Renko Study</b> rebuilds the environment chart at many brick sizes from raw ticks.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="row">
+      <div class="pic"><img src="img/panel_setup_lab.webp" alt="Setup Lab: one setup's rules on the left, its equity across every logged day on the right, values hidden" width="1600" height="940"></div>
+      <div>
+        <h2>One setup at a time</h2>
+        <ul>
+          <li><b>Setup Lab</b> isolates a single setup and direction and replays it on every logged day. No day is left out.</li>
+          <li><b>Every rule on one dial:</b> entry, score gates, exits and timing. Turn one and the whole history replays.</li>
+          <li><b>Patterns, not feelings.</b> Each single change is graded by the same hard rule, and only the ones that hold up in both halves of the data are called forming.</li>
+          <li><b>From research to the strategy:</b> the lab lists exactly which strategy settings to type in to run what was dialled.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="row flip">
+      <div class="pic"><img src="img/panel_start_here.webp" alt="Start Here: changes with enough evidence and a watch list, values hidden" width="1600" height="940"></div>
+      <div>
+        <h2>Evidence before opinion</h2>
+        <ul>
+          <li><b>Start Here</b> shows only the changes with enough evidence behind them, and a watch list of promising ones that need more days.</li>
+          <li><b>Confidence is capped</b> by the number of days logged, however good a result looks.</li>
+          <li><b>One or two changes at a time,</b> in simulation first.</li>
         </ul>
       </div>
     </div>
@@ -148,8 +177,8 @@
       <div class="step"><div class="n">03 · PROVE</div><h3>Judge on unseen days</h3><p>Run the next block with the new settings and judge them only on days that played no part in choosing them.</p></div>
       <div class="step"><div class="n">04 · REPEAT</div><h3>Keep or roll back</h3><p>If it still wins out of sample, it stays. If not, it goes. Then the next block begins.</p></div>
     </div>
-    <img src="img/panel_start_here.webp" alt="Start Here tab: changes with enough evidence and a watch list, values hidden" width="1600" height="850">
-    <p class="cap">Start Here lists only the changes with enough evidence, and a watch list of promising ones that need more days. Confidence is capped by the number of days logged, however good a result looks.</p>
+    <img src="img/panel_walkforward.webp" alt="Walk-Forward tab: trading calendar, settings paths and verdicts, values hidden" width="1600" height="940">
+    <p class="cap">The Walk-Forward tab does the bookkeeping. Every day is replayed with the settings that were really in force that day. Each change is drawn as its own path, with and without it, and graded only on the days after it was made. A trading calendar marks holidays, early closes and decision days.</p>
   </section>
 
   <section>
